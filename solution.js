@@ -14,7 +14,7 @@
     // our table DOM Node
     const table = utils.getTable("table")
     // creating <th> elements - notice the sort() function passed as callback - this will be called later upon <th> click 
-    utils.fillHeaders(table, headers, utils.sort)
+    utils.fillHeaders(table, headers, utils.sort.bind(utils))
     // then we fill the body <tr><td></td>...<tr/>
     utils.fillRows(table, Table.data, headers)
 

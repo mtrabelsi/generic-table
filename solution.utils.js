@@ -12,7 +12,7 @@ Table.Utils = class {
         const headers = []
         data.forEach((elem) => {
             for (let prop in elem) {
-                if (headers.indexOf(prop) == -1) {
+                if ( !headers.includes(prop) ) {
                     headers.push(prop)
                 }
             }
@@ -45,6 +45,26 @@ Table.Utils = class {
         })
     }
 
+    static format(str, separators) {
+        const dates = separators.map(sep => {
+            const arr = str.split(sep)
+            // check when the split() fails
+            if (arr.length === 1) {
+                return NaN
+            } else {
+                return Date.parse(arr[2] + "-" + arr[1] + "-" + arr[0])
+            }
+        })
+
+        for (let i = 0; i < dates.length; i++) {
+            if (!isNaN(dates[i])) {
+                return { isDate: true, value: dates[i] }
+            }
+        }
+
+        return { isDate: false, value: str }
+    }
+
     static sort(table, sortBy) {
         // convert  HTMLCollection to Array and ignore the <th> row
         let rows = Array.from(table.rows).slice(1)
@@ -56,7 +76,13 @@ Table.Utils = class {
             if ( !isNaN(parseFloat(el1)) && isFinite(el1) && !isNaN(parseFloat(el2)) &&  isFinite(el2) ) {
                el1 = parseFloat(el1)
                el2 = parseFloat(el2)
-            } 
+            } else {
+                const seprs = ['/','-']
+                if (this.format(el1, seprs).isDate || this.format(el2, seprs).isDate ) {
+                    el1 = this.format(el1, seprs).value
+                    el2 = this.format(el2, seprs).value
+                }
+            }
 
             return el1 >= el2 ? -1 : 1
         })
